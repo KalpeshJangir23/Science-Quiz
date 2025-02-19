@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:quiz_science_app/data/model/user_info_model.dart';
+import 'package:quiz_science_app/screens/home_screen.dart';
 import 'package:quiz_science_app/theme/app_color.dart';
 
 class UserInfoPage extends StatefulWidget {
@@ -18,7 +21,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
     super.dispose();
   }
 
-  void _navigateToHome() {
+  void _navigateToHome() async {
+    Box<UserInfoModel> userInfo = Hive.box<UserInfoModel>('user_info');
+    var userInfoModel = UserInfoModel(
+      course_taken: _selectedStudentType,
+      name: _nameController.text.trim(),
+    );
+    await userInfo.put(userInfoModel.name, userInfoModel);
+    await userInfo.put(userInfoModel.course_taken, userInfoModel);
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -29,22 +39,19 @@ class _UserInfoPageState extends State<UserInfoPage> {
       return;
     }
 
-    // Navigate to home screen with user data
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomePage(
-          userName: _nameController.text.trim(),
-          studentType: _selectedStudentType,
-        ),
+        builder: (context) => const HomePage(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    var texttheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColor.appBackground,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -61,7 +68,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
               // Name Input Field
               TextField(
                 controller: _nameController,
-                style: const TextStyle(color: AppColor.textColor),
+                style: texttheme.displayMedium,
                 decoration: const InputDecoration(
                   labelText: 'Your Name',
                   hintText: 'Enter your full name',
@@ -80,10 +87,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                     value: _selectedStudentType,
                     isExpanded: true,
                     dropdownColor: AppColor.smallContainer,
-                    style: const TextStyle(
-                      color: AppColor.textColor,
-                      fontSize: 16,
-                    ),
+                    style: texttheme.bodyLarge,
                     items: ['Medical', 'Engineering'].map((String type) {
                       return DropdownMenuItem<String>(
                         value: type,
@@ -104,54 +108,17 @@ class _UserInfoPageState extends State<UserInfoPage> {
               // Continue Button
               ElevatedButton(
                 onPressed: _navigateToHome,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     'Continue',
-                    style: TextStyle(fontSize: 18),
+                    style:
+                        texttheme.bodyLarge!.copyWith(color: AppColor.offshade),
                   ),
                 ),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Placeholder for HomePage - Create this in a separate file
-class HomePage extends StatelessWidget {
-  final String userName;
-  final String studentType;
-
-  const HomePage({
-    super.key,
-    required this.userName,
-    required this.studentType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.appBackground,
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Welcome, $userName!',
-              style: Theme.of(context).textTheme.displaySmall,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Student Type: $studentType',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
         ),
       ),
     );

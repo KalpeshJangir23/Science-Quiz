@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_science_app/screens/login_page.dart';
+import 'package:quiz_science_app/screens/home_screen.dart';
+import 'package:quiz_science_app/screens/user_info_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -12,7 +13,7 @@ class SplashScreen extends StatelessWidget {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                const UserInfoPage()), 
+                const HomePage()), 
       );
     });
 

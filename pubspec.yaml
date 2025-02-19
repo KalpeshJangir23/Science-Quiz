@@ -33,9 +33,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.0.0
+  hive_flutter: ^1.1.0
   http: ^1.3.0
   path_provider: ^2.1.5
   provider: ^6.1.2
+  hive:
 
 dev_dependencies:
 
@@ -45,6 +47,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  build_runner:
+  hive_generator:
   flutter_test:
     sdk: flutter
 

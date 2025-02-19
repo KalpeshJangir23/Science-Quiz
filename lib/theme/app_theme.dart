@@ -17,8 +17,6 @@ class AppTheme {
         onSecondary: AppColor.textColor,
         error: Colors.red,
         onError: AppColor.whiteShade,
-        background: AppColor.appBackground,
-        onBackground: AppColor.textColor,
         surface: AppColor.largeContainer,
         onSurface: AppColor.textColor,
       ),
