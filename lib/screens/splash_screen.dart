@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_science_app/screens/home_screen.dart';
-import 'package:quiz_science_app/screens/user_info_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

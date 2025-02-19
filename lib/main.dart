@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:quiz_science_app/bloc/home_screen/home_bloc.dart';
 import 'package:quiz_science_app/data/model/user_info_model.dart';
+import 'package:quiz_science_app/data/repositories/get_data_from_api.dart';
 import 'package:quiz_science_app/screens/splash_screen.dart';
 import 'package:quiz_science_app/theme/app_theme.dart';
 
@@ -18,10 +21,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: AppTheme.darkTheme,
-      home: const SplashScreen(),
+    return BlocProvider(
+      create: (context) => HomeBloc(apiService: ApiService()),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: AppTheme.darkTheme,
+        home: const SplashScreen(),
+      ),
     );
   }
 }

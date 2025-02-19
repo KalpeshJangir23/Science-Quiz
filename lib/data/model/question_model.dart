@@ -9,8 +9,8 @@ class QuestionCourseModel {
   final String detailed_solution;
   final String question_from;
   final List<OptionModel> options;
-  final ReadingMaterialModel reading_material;
-  final PracticeMaterialModel practice_material;
+  final ReadingMaterialModel? reading_material;
+  final PracticeMaterialModel? practice_material;
 
   QuestionCourseModel({
     required this.id,
@@ -25,20 +25,23 @@ class QuestionCourseModel {
 
   factory QuestionCourseModel.fromJson(Map<String, dynamic> map) {
     return QuestionCourseModel(
-      id: map['id'] as int,
-      description: map['description'] as String,
-      topic: map['topic'] as String,
-      detailed_solution: map['detailed_solution'] as String,
-      question_from: map['question_from'] as String,
-      options: List<OptionModel>.from(
-        (map['options'] as List<int>).map<OptionModel>(
-          (x) => OptionModel.fromJson(x as Map<String, dynamic>),
-        ),
-      ),
-      reading_material: ReadingMaterialModel.fromMap(
-          map['reading_material'] as Map<String, dynamic>),
-      practice_material: PracticeMaterialModel.fromMap(
-          map['practice_material'] as Map<String, dynamic>),
+      id: map['id'] ?? 0,
+      description: map['description'] ?? '',
+      topic: map['topic'] ?? '',
+      detailed_solution: map['detailed_solution'] ?? '',
+      question_from: map['question_from'] ?? '',
+      options: (map['options'] as List<dynamic>?)
+              ?.map((x) => OptionModel.fromJson(x as Map<String, dynamic>))
+              .toList() ??
+          [],
+      reading_material: map['reading_material'] == null
+          ? null
+          : ReadingMaterialModel.fromMap(
+              map['reading_material'] as Map<String, dynamic>),
+      practice_material: map['practice_material'] == null
+          ? null
+          : PracticeMaterialModel.fromMap(
+              map['practice_material'] as Map<String, dynamic>),
     );
   }
 }

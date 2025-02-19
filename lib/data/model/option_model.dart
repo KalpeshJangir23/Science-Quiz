@@ -12,9 +12,9 @@ class OptionModel {
 
   factory OptionModel.fromJson(Map<String, dynamic> map) {
     return OptionModel(
-      id: map['id'] as int,
-      description: map['description'] as String,
-      is_correct: map['is_correct'] as bool,
+      id: map['id'] ?? 0,
+      description: map['description'] ?? [],
+      is_correct: map['is_correct'] ?? [],
     );
   }
 }
@@ -40,9 +40,9 @@ class ReadingMaterialModel {
 
   factory ReadingMaterialModel.fromMap(Map<String, dynamic> map) {
     return ReadingMaterialModel(
-      id: map['id'] as int,
-      keywords: map['keywords'] as String,
-      content_sections: List<String>.from(map['content_sections'] as List),
+      id: map['id'] ?? 0,
+      keywords: map['keywords'] ?? '',
+      content_sections: List<String>.from(map['content_sections'] ?? []),
     );
   }
 }
@@ -58,8 +58,8 @@ class PracticeMaterialModel {
 
   factory PracticeMaterialModel.fromMap(Map<String, dynamic> map) {
     return PracticeMaterialModel(
-      content: List<String>.from(map['content'] as List),
-      keywords: List<String>.from(map['keywords'] as List),
+      content: List<String>.from(map['content'] ?? []),
+      keywords: List<String>.from(map['keywords'] ?? []),
     );
   }
 }

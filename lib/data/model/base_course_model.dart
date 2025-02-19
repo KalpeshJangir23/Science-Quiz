@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-
 import 'package:quiz_science_app/data/model/question_model.dart';
 
 class BaseCourseModel {
@@ -11,8 +10,8 @@ class BaseCourseModel {
   final String negative_marks;
   final String correct_answer_marks;
   final String live_count;
-  final String coin_count;
-  final String questions_count;
+  final int coin_count;
+  final int questions_count;
   final int max_mistake_count;
   final List<QuestionCourseModel> questions;
 
@@ -32,21 +31,21 @@ class BaseCourseModel {
 
   factory BaseCourseModel.fromJson(Map<String, dynamic> map) {
     return BaseCourseModel(
-      id: map['id'] as int,
-      title: map['title'] as String,
-      topic: map['topic'] as String,
-      duration: map['duration'] as int,
-      negative_marks: map['negative_marks'] as String,
-      correct_answer_marks: map['correct_answer_marks'] as String,
-      live_count: map['live_count'] as String,
-      coin_count: map['coin_count'] as String,
-      questions_count: map['questions_count'] as String,
-      max_mistake_count: map['max_mistake_count'] as int,
-      questions: List<QuestionCourseModel>.from(
-        (map['questions'] as List<int>).map<QuestionCourseModel>(
-          (x) => QuestionCourseModel.fromJson(x as Map<String, dynamic>),
-        ),
-      ),
+      id: map['id'] ?? 0,
+      title: map['title'] ?? '',
+      topic: map['topic'] ?? '',
+      duration: map['duration'] ?? 0,
+      negative_marks: map['negative_marks']?.toString() ?? '0',
+      correct_answer_marks: map['correct_answer_marks']?.toString() ?? '0',
+      live_count: map['live_count']?.toString() ?? '0',
+      coin_count: map['coin_count'] ?? 0,
+      questions_count: map['questions_count'] ?? 0,
+      max_mistake_count: map['max_mistake_count'] ?? 0,
+      questions: (map['questions'] as List<dynamic>?)
+              ?.map((x) =>
+                  QuestionCourseModel.fromJson(x as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 }

@@ -16,4 +16,8 @@ class HomeLoaded extends HomeState {
   HomeLoaded(this.baseCourseModel);
 }
 
-class HomeError extends HomeState {}
+class HomeError extends HomeState {
+  final String message;
+
+  HomeError({required this.message});
+}
