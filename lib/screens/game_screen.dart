@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_science_app/bloc/home_screen/home_bloc.dart';
@@ -14,6 +15,9 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  Timer? _timer;
+  int _remainingSeconds = 0;
+  bool _isTimerStarted = false;
 
   @override
   void initState() {
@@ -27,10 +31,70 @@ class _GameScreenState extends State<GameScreen> {
     });
   }
 
+  void _startTimer(int durationInMinutes) {
+    if (_isTimerStarted) return; // Prevent multiple timer starts
+    
+    _isTimerStarted = true;
+    _remainingSeconds = durationInMinutes * 60; // Convert minutes to seconds
+    
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingSeconds > 0) {
+          _remainingSeconds--;
+        } else {
+          _timer?.cancel();
+          _showTimeUpDialog();
+        }
+      });
+    });
+  }
+
+  void _showTimeUpDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Time\'s Up!'),
+        content: const Text('You\'ve run out of time.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close dialog
+              Navigator.of(context).pop(); // Return to previous screen
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatTime(int totalSeconds) {
+    int minutes = totalSeconds ~/ 60;
+    int seconds = totalSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("ATB")),
+      appBar: AppBar(
+        title: const Text("ATB"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Center(
+              child: Text(
+                _formatTime(_remainingSeconds),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: _remainingSeconds < 60 ? Colors.red : null, // Red color for last minute
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
@@ -42,11 +106,16 @@ class _GameScreenState extends State<GameScreen> {
           }
           if (state is HomeLoaded) {
             final data = state.baseCourseModel;
+            // Start timer only once when data is loaded
+            if (!_isTimerStarted) {
+              _startTimer(data.duration);
+            }
+            
             return Column(
               children: [
                 Expanded(
                   child: PageView.builder(
-                    controller: _pageController,  // Added this line
+                    controller: _pageController,
                     itemCount: data.questions.length,
                     itemBuilder: (context, index) {
                       final question = data.questions[index];
@@ -55,8 +124,6 @@ class _GameScreenState extends State<GameScreen> {
                         options: question.options,
                         onOptionSelected: (selectedOptionId) {
                           // Handle option selection
-                          // You might want to store the selected answer
-                          // or trigger some validation logic
                         },
                       );
                     },
@@ -122,6 +189,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _pageController.dispose();
     super.dispose();
   }
