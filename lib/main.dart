@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:quiz_science_app/bloc/game_screen.dart/game_bloc.dart';
 import 'package:quiz_science_app/bloc/home_screen/home_bloc.dart';
 import 'package:quiz_science_app/data/model/user_info_model.dart';
 import 'package:quiz_science_app/data/repositories/get_data_from_api.dart';
@@ -21,8 +22,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeBloc(apiService: ApiService()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => HomeBloc(apiService: ApiService()),
+        ),
+        BlocProvider(
+          create: (context) => GameBloc (),
+        ),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: AppTheme.darkTheme,

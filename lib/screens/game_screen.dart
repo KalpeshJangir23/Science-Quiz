@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_science_app/bloc/game_screen.dart/game_bloc.dart';
+import 'package:quiz_science_app/bloc/game_screen.dart/game_event.dart';
 import 'package:quiz_science_app/bloc/home_screen/home_bloc.dart';
 import 'package:quiz_science_app/bloc/home_screen/home_state.dart';
+import 'package:quiz_science_app/data/model/question_model.dart';
+import 'package:quiz_science_app/screens/score_screen.dart';
 import 'package:quiz_science_app/screens/widget/question_display_card.dart';
 
 class GameScreen extends StatefulWidget {
@@ -18,6 +22,7 @@ class _GameScreenState extends State<GameScreen> {
   Timer? _timer;
   int _remainingSeconds = 0;
   bool _isTimerStarted = false;
+  final Map<int, int> _userAnswers = {};
 
   @override
   void initState() {
@@ -33,10 +38,10 @@ class _GameScreenState extends State<GameScreen> {
 
   void _startTimer(int durationInMinutes) {
     if (_isTimerStarted) return; // Prevent multiple timer starts
-    
+
     _isTimerStarted = true;
     _remainingSeconds = durationInMinutes * 60; // Convert minutes to seconds
-    
+
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -88,8 +93,10 @@ class _GameScreenState extends State<GameScreen> {
               child: Text(
                 _formatTime(_remainingSeconds),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: _remainingSeconds < 60 ? Colors.red : null, // Red color for last minute
-                ),
+                      color: _remainingSeconds < 60
+                          ? Colors.red
+                          : null, // Red color for last minute
+                    ),
               ),
             ),
           ),
@@ -110,7 +117,7 @@ class _GameScreenState extends State<GameScreen> {
             if (!_isTimerStarted) {
               _startTimer(data.duration);
             }
-            
+
             return Column(
               children: [
                 Expanded(
@@ -123,7 +130,14 @@ class _GameScreenState extends State<GameScreen> {
                         description: question.description,
                         options: question.options,
                         onOptionSelected: (selectedOptionId) {
-                          // Handle option selection
+                          setState(() {
+                            _userAnswers[index] = selectedOptionId;
+                          });
+
+                          // If this is the last question and an answer is selected, calculate final score
+                          if (index == data.questions.length - 1) {
+                            _calculateFinalScore(data.questions);
+                          }
                         },
                       );
                     },
@@ -144,7 +158,8 @@ class _GameScreenState extends State<GameScreen> {
                             onPressed: _currentPage > 0
                                 ? () {
                                     _pageController.previousPage(
-                                      duration: const Duration(milliseconds: 300),
+                                      duration:
+                                          const Duration(milliseconds: 300),
                                       curve: Curves.easeInOut,
                                     );
                                   }
@@ -156,7 +171,8 @@ class _GameScreenState extends State<GameScreen> {
                             onPressed: _currentPage < data.questions.length - 1
                                 ? () {
                                     _pageController.nextPage(
-                                      duration: const Duration(milliseconds: 300),
+                                      duration:
+                                          const Duration(milliseconds: 300),
                                       curve: Curves.easeInOut,
                                     );
                                   }
@@ -192,5 +208,39 @@ class _GameScreenState extends State<GameScreen> {
     _timer?.cancel();
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _calculateFinalScore(List<QuestionCourseModel> questions) {
+    int correctCount = 0;
+    int wrongCount = 0;
+
+    _userAnswers.forEach((questionIndex, selectedOptionId) {
+      final question = questions[questionIndex];
+      final selectedOption =
+          question.options.firstWhere((opt) => opt.id == selectedOptionId);
+
+      if (selectedOption.is_correct) {
+        correctCount++;
+      } else {
+        wrongCount++;
+      }
+    });
+
+    // Create a new instance of CalculateScore event with the correct values
+    final calculateScoreEvent = CalculateScore()
+      ..correct_count = correctCount
+      ..wrong_count = wrongCount;
+
+    // Add the event to the bloc
+    context.read<GameBloc>().add(calculateScoreEvent);
+
+    // Navigate to score screen
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ScoreScreen(
+          totalQuestions: questions.length,
+        ),
+      ),
+    );
   }
 }

@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                                       ?.copyWith(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .onBackground,
+                                            .onSurface,
                                       ),
                                 ),
                                 TweenAnimationBuilder(

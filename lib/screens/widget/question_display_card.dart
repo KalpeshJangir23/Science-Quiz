@@ -106,7 +106,7 @@ class _QuestionDisplayCardState extends State<QuestionDisplayCard> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
