@@ -129,12 +129,13 @@ class _GameScreenState extends State<GameScreen> {
                       return QuestionDisplayCard(
                         description: question.description,
                         options: question.options,
+                        questionId: question.id,
+                        selectedOptionId: _userAnswers[index],
                         onOptionSelected: (selectedOptionId) {
                           setState(() {
                             _userAnswers[index] = selectedOptionId;
                           });
 
-                          // If this is the last question and an answer is selected, calculate final score
                           if (index == data.questions.length - 1) {
                             _calculateFinalScore(data.questions);
                           }

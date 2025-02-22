@@ -8,3 +8,14 @@ class CalculateScore extends GameEvent {
 class DisplayScore extends GameEvent {}
 
 class DisplayDetailView extends GameEvent {}
+
+// Add new event for answer selection
+class AnswerSelected extends GameEvent {
+  final int questionId;
+  final int optionId;
+
+  AnswerSelected({
+    required this.questionId,
+    required this.optionId,
+  });
+}
